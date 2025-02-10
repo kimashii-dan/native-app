@@ -71,7 +71,6 @@ export default function SignIn() {
         >
           <Text className="text-5xl">Sign in</Text>
 
-          {/* Email Field */}
           <View>
             <Text className="text-xl mb-2">Email</Text>
             <Controller
@@ -94,7 +93,6 @@ export default function SignIn() {
             )}
           </View>
 
-          {/* Password Field */}
           <View>
             <Text className="text-xl mb-2">Password</Text>
             <Controller
