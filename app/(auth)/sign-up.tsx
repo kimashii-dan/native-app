@@ -65,14 +65,14 @@ export default function SignUp() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 justify-center">
+    <SafeAreaView className="flex-1 justify-center bg-white">
       <View className="flex-1 justify-center items-center">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}

@@ -12,7 +12,9 @@ export default function Home() {
       <ScrollView>
         <View className="flex-1 justify-center items-center py-8">
           <View className="w-[80%] ">
-            <Text className="text-3xl">Welcome home, {user?.username}</Text>
+            <Text className="text-3xl font-semibold">
+              Welcome home, {user?.username}
+            </Text>
           </View>
         </View>
       </ScrollView>
