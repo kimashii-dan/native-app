@@ -8,14 +8,14 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebaseConfig/config";
-import { User } from "@/store/authSlice";
+import UserType from "@/types/userType";
 import { UserCircleIcon } from "lucide-react-native";
+import { PeopleService } from "@/services/people";
+import Loading from "@/components/Loading";
 
 export default function UserProfile() {
   const { id } = useLocalSearchParams();
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<UserType>();
   const [loading, setLoading] = useState<boolean>(true);
 
   const userId = Array.isArray(id) ? id[0] : id;
@@ -23,27 +23,19 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userDoc = await getDoc(doc(db, "users", userId));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          setUser({ uid: userId, email: data.email, username: data.username });
-        }
+        const userData = await PeopleService.getUserById(userId);
+        setUser(userData);
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.log(error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUser();
   }, [userId]);
 
   if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loading />;
   }
 
   return (
@@ -61,7 +53,7 @@ export default function UserProfile() {
 
             <TouchableOpacity
               onPress={() => {}}
-              className="p-3 bg-blue-600 rounded-md w-1/3 items-center"
+              className="p-3 bg-black rounded-md w-1/3 items-center"
             >
               <Text className="text-white text-xl">Message</Text>
             </TouchableOpacity>

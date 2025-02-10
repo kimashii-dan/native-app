@@ -6,16 +6,15 @@ import {
   View,
   Text,
   TextInput,
-  Alert,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, router } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebaseConfig/config";
+import { Link } from "expo-router";
+import { AuthService } from "@/services/auth";
+import Loading from "@/components/Loading";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -35,31 +34,21 @@ export default function SignIn() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const signIn = async (data: FormData) => {
+  const signIn = async (credentials: FormData) => {
     setLoading(true);
-    const { email, password } = data;
+    const { email, password } = credentials;
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log("User signed in", userCredential.user.email);
-      router.push("/(tabs)/home");
+      const response = await AuthService.signIn(email, password);
+      console.log("User signed in", response.email);
     } catch (error: any) {
-      console.error("Sign-in error:", error.message);
-      Alert.alert("Sign In Error", error.message);
+      console.log("Sign in error:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loading />;
   }
 
   return (

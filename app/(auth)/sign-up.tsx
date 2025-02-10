@@ -12,11 +12,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, router } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth } from "@/firebaseConfig/config";
-import { db } from "@/firebaseConfig/config";
+import { Link } from "expo-router";
+import { AuthService } from "@/services/auth";
+import Loading from "@/components/Loading";
 
 const schema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -37,38 +35,21 @@ export default function SignUp() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const signUp = async (data: FormData) => {
+  const signUp = async (credentials: FormData) => {
     setLoading(true);
-    const { email, password, username } = data;
+    const { email, password, username } = credentials;
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log("User signed up", userCredential.user.email);
-
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        username,
-        email,
-      });
-
-      console.log("User data stored in Firestore.");
-
-      router.push("/(tabs)/home");
+      const response = await AuthService.signUp(email, password, username);
+      console.log("User signed up", response.email);
     } catch (error: any) {
-      console.error("Sign-up error:", error.message);
+      console.log("Sign up error:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loading />;
   }
 
   return (

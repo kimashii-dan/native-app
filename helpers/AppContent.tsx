@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Slot } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../firebaseConfig/config";
+import { auth } from "../firebaseConfig/config";
 import { setUser, clearUser } from "../store/authSlice";
 import { ActivityIndicator, View } from "react-native";
-import { doc, getDoc } from "firebase/firestore";
+import { UserService } from "@/services/user";
 
 export default function AppContent() {
   const dispatch = useDispatch();
@@ -13,32 +13,19 @@ export default function AppContent() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
-
-          let username = "";
-          if (userDocSnap.exists()) {
-            const data = userDocSnap.data();
-            username = data.username;
-          }
-
-          const userData = {
-            uid: currentUser.uid,
-            email: currentUser.email,
-            username,
-          };
-
+      try {
+        if (currentUser) {
+          const userData = await UserService.getCurrentUser(currentUser);
           dispatch(setUser(userData));
-        } catch (error) {
-          console.error("Error fetching user document:", error);
+        } else {
           dispatch(clearUser());
         }
-      } else {
+      } catch (error) {
+        console.error("Error fetching user data:", error);
         dispatch(clearUser());
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();

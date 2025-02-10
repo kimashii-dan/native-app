@@ -7,35 +7,24 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
-import { collection, getDocs } from "firebase/firestore";
-import { auth, db } from "@/firebaseConfig/config";
-import { User } from "@/store/authSlice";
+
+import UserType from "@/types/userType";
 import { router } from "expo-router";
 import { UserCircleIcon } from "lucide-react-native";
+import { PeopleService } from "@/services/people";
+import Loading from "@/components/Loading";
 
 export default function People() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const currentUser = auth.currentUser;
-        if (!currentUser) return;
-        const usersCollection = collection(db, "users");
-        const usersSnapshot = await getDocs(usersCollection);
-
-        const usersList: User[] = usersSnapshot.docs
-          .map((doc) => ({
-            uid: doc.id,
-            email: doc.data().email || null,
-            username: doc.data().username || null,
-          }))
-          .filter((user) => user.uid !== currentUser?.uid);
-
-        setUsers(usersList);
+        const usersData = await PeopleService.fetchAllUsers();
+        setUsers(usersData);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -45,11 +34,7 @@ export default function People() {
   }, []);
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loading />;
   }
 
   return (
@@ -61,7 +46,7 @@ export default function People() {
             scrollEnabled={false}
             data={users}
             keyExtractor={(item) => item.uid}
-            ItemSeparatorComponent={() => <View className="h-10" />}
+            ItemSeparatorComponent={() => <View className="h-9" />}
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => router.push(`/people/${item.uid}`)}

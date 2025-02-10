@@ -7,36 +7,31 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
-import { signOut } from "@firebase/auth";
-import { auth } from "@/firebaseConfig/config";
-import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 import { UserCircleIcon } from "lucide-react-native";
+import { AuthService } from "@/services/auth";
+import Loading from "@/components/Loading";
 
 export default function Profile() {
   const { user } = useSelector((state: RootState) => state.auth);
   const [loading, setLoading] = useState<boolean>(false);
-  const signOutUser = async () => {
+
+  const signOut = async () => {
     setLoading(true);
     try {
-      await signOut(auth);
+      await AuthService.signOut();
       console.log("User signed out");
-      router.push("/");
     } catch (error: any) {
-      console.error("Sign-out error:", error.message);
+      console.log("Sign out error:", error.message);
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loading />;
   }
   return (
     <SafeAreaView className="h-screen">
@@ -52,8 +47,8 @@ export default function Profile() {
             <Text>Email: {user?.email}</Text>
 
             <TouchableOpacity
-              onPress={signOutUser}
-              className="p-3 bg-black rounded-md w-1/3 items-center mt-5"
+              onPress={signOut}
+              className="p-3 bg-black rounded-md w-1/3 items-center"
             >
               <Text className="text-white text-xl">Sign out</Text>
             </TouchableOpacity>
