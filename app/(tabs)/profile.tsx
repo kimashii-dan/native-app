@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";

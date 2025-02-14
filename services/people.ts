@@ -1,16 +1,16 @@
 import { auth, db } from "@/firebaseConfig/config";
-import UserType from "@/types/userType";
+import { FriendType, UserType } from "@/types";
 
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 export const PeopleService = {
-  fetchAllUsers: async (): Promise<UserType[]> => {
+  fetchAllUsers: async (): Promise<FriendType[]> => {
     try {
       const currentUser = auth.currentUser;
       const usersCollection = collection(db, "users");
       const usersSnapshot = await getDocs(usersCollection);
 
-      const usersList: UserType[] = usersSnapshot.docs
+      const usersList: FriendType[] = usersSnapshot.docs
         .map((doc) => ({
           uid: doc.id,
           email: doc.data().email || null,
@@ -24,7 +24,7 @@ export const PeopleService = {
     }
   },
 
-  getUserById: async (uid: string): Promise<UserType> => {
+  getUserById: async (uid: string): Promise<FriendType> => {
     try {
       const userDocRef = doc(db, "users", uid);
       const userDocSnap = await getDoc(userDocRef);
@@ -34,7 +34,7 @@ export const PeopleService = {
         throw new Error("User document not found");
       }
 
-      const userData: UserType = {
+      const userData: FriendType = {
         uid,
         email: data.email || null,
         username: data.username || null,

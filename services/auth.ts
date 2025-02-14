@@ -1,4 +1,5 @@
 import { auth, db } from "@/firebaseConfig/config";
+import { FriendType, UserType } from "@/types";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -24,7 +25,8 @@ export const AuthService = {
   signUp: async (
     email: string,
     password: string,
-    username: string
+    username: string,
+    friends: FriendType | []
   ): Promise<User> => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -35,6 +37,7 @@ export const AuthService = {
       await setDoc(doc(db, "users", userCredential.user.uid), {
         username,
         email,
+        friends,
       });
       return userCredential.user;
     } catch (error: any) {

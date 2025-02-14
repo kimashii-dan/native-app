@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
@@ -39,7 +38,7 @@ export default function SignUp() {
     setLoading(true);
     const { email, password, username } = credentials;
     try {
-      const response = await AuthService.signUp(email, password, username);
+      const response = await AuthService.signUp(email, password, username, []);
       console.log("User signed up", response.email);
     } catch (error: any) {
       console.log("Sign up error:", error.message);

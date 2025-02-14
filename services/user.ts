@@ -1,5 +1,5 @@
 import { db } from "@/firebaseConfig/config";
-import UserType from "@/types/userType";
+import { UserType } from "@/types";
 import { User } from "firebase/auth";
 
 import { doc, getDoc } from "firebase/firestore";
@@ -19,10 +19,11 @@ export const UserService = {
         throw new Error("User document not found");
       }
 
-      const userData: UserType = {
+      const userData = {
         uid: currentUser.uid,
         email: currentUser.email,
         username: data.username || null,
+        friends: [],
       };
 
       return userData;

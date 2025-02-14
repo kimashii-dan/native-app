@@ -14,8 +14,7 @@ export default function App() {
     <SafeAreaView className="justify-center items-center h-screen">
       <View className="w-[80%]  gap-8">
         <Text className="text-xl font-semibold">
-          Welcome to my real-time chat app with React Native, Expo, Firebase,
-          Websockets, Redux, React-Hook-Form, Zod.
+          Real-time chat app with React Native, Expo, Firebase, Redux
         </Text>
         <TouchableOpacity onPress={() => router.push("/sign-in")}>
           <Text className="underline text-blue-500">Continue with email</Text>

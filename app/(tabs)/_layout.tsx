@@ -1,7 +1,7 @@
 import { RootState } from "@/store/store";
 import { Redirect, Tabs } from "expo-router";
 import { useSelector } from "react-redux";
-import { User, Home, Users } from "lucide-react-native";
+import { User, Home, Users, MessagesSquare } from "lucide-react-native";
 export default function TabsLayout() {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   if (!isAuthenticated) {
@@ -27,6 +27,16 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="chats"
+        options={{
+          title: "Chats",
+          tabBarIcon: ({ focused }) => (
+            <MessagesSquare color={focused ? "blue" : "black"} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="profile"
         options={{
