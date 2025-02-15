@@ -11,38 +11,44 @@ import {
   query,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { IMessage } from "react-native-gifted-chat";
 import { PeopleService } from "./people";
 
 export const ChatService = {
-  fetchChatList: async (currentUserId: string): Promise<ChatFriendType[]> => {
+  fetchChatList: (
+    currentUserId: string,
+    setChats: (chats: ChatFriendType[]) => void
+  ) => {
     try {
       const chatsQuery = query(
         collection(db, "chats"),
         where("users", "array-contains", currentUserId),
         orderBy("lastUpdated", "desc")
       );
-      const querySnapshot = await getDocs(chatsQuery);
-      const chats = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
-          const chatData = doc.data();
-          const friendId = chatData.users.find(
-            (id: string) => id !== currentUserId
-          );
-          const friend = await PeopleService.getUserById(friendId);
-          return {
-            chatId: chatData.chatId,
-            users: chatData.users,
-            friendDisplayName: friend.username,
-            lastMessage: chatData.lastMessage,
-            lastUpdated: chatData.lastUpdated?.toDate(),
-          };
-        })
-      );
 
-      return chats;
+      return onSnapshot(chatsQuery, async (querySnapshot) => {
+        const chats = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const chatData = doc.data();
+            const friendId = chatData.users.find(
+              (id: string) => id !== currentUserId
+            );
+            const friend = await PeopleService.getUserById(friendId);
+            return {
+              chatId: chatData.chatId,
+              users: chatData.users,
+              friendDisplayName: friend.username,
+              lastMessage: chatData.lastMessage,
+              lastUpdated: chatData.lastUpdated,
+            };
+          })
+        );
+
+        setChats(chats);
+      });
     } catch (error) {
       console.error("Error fetching chat list:", error);
       throw error;
@@ -61,7 +67,7 @@ export const ChatService = {
         chatId,
         users: [userId, friendId],
         lastMessage: "",
-        lastUpdated: Timestamp.now(),
+        lastUpdated: Timestamp.fromDate(new Date()),
       });
     }
 
@@ -80,7 +86,13 @@ export const ChatService = {
       text: message.text,
       senderId: user.uid,
       senderName: user.username || "Unknown",
-      createdAt: Timestamp.now(),
+      createdAt: Timestamp.fromDate(new Date()),
+    });
+
+    const chatRef = doc(db, "chats", realChatId);
+    await updateDoc(chatRef, {
+      lastMessage: message.text,
+      lastUpdated: Timestamp.fromDate(new Date()),
     });
   },
 
