@@ -23,7 +23,7 @@ export const UserService = {
         uid: currentUser.uid,
         email: currentUser.email,
         username: data.username || null,
-        friends: [],
+        friends: data.friends,
       };
 
       return userData;

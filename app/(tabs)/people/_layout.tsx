@@ -11,6 +11,13 @@ export default function PeopleLayout() {
         }}
       />
       <Stack.Screen
+        name="requests/index"
+        options={{
+          headerShown: false,
+          headerTitle: "Requests",
+        }}
+      />
+      <Stack.Screen
         name="[id]/index"
         options={{
           headerShown: false,

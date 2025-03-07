@@ -13,6 +13,16 @@ interface FriendType {
   username: string | null;
 }
 
+interface IncomingFriendRequest {
+  requestID: string;
+  sender: FriendType;
+}
+
+interface OutgoingFriendRequest {
+  requestID: string;
+  receiver: FriendType;
+}
+
 interface AuthState {
   user: UserType | null;
   isAuthenticated: boolean;
@@ -36,6 +46,13 @@ interface MessageType {
   receiverId: string;
 }
 
+interface FriendRequest {
+  requestID: string;
+  senderID: string;
+  receiverID: string;
+  createdAt: Timestamp;
+}
+
 export {
   UserType,
   AuthState,
@@ -43,4 +60,7 @@ export {
   MessageType,
   FriendType,
   ChatFriendType,
+  FriendRequest,
+  IncomingFriendRequest,
+  OutgoingFriendRequest,
 };
